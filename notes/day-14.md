@@ -17,4 +17,6 @@
 - Custom Origin (http)
     - s3 website (must first enable the bucket as a static s3 website)
     - any public http backend you want (example:Public ALB)
-  - 
+## Cloudfront vs s3 cross region replication
+- cloudfront: global edge network, files are cached for A TTL, great for static content that must be available everywhere
+- s3 cross region replication: must be setup for each region you want, files are updated in near realtime, read only, great for dynamic conteent that needs to be available at low latency in few regions

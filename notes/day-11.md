@@ -3,7 +3,7 @@
 **Amazon S3**
 
 - S3 is one of the main building blocks of AWS  
-- It's advertised as infinitely scalable storage  
+- It is advertised as infinitely scalable storage  
 - Many websites and AWS services use Amazon S3 as a backbone for integration  
 - Use cases: backup and storage, DR, archive, hybrid cloud storage, application hosting, media hosting, data lakes, etc.
 
@@ -12,14 +12,14 @@
 - Amazon S3 allows you to store objects/files in buckets (directories)  
 - Buckets are defined at the Region level  
 - S3 looks like a global service, but buckets are created in a Region  
-- No uppercase letters, no underscores, 3-63 characters long, not an IP, must not start with a prefix, must not end with a suffix
+- No uppercase letters, no underscores, 3-63 characters long, not an IP, must not start with a prefix, and must not end with a suffix
 
 **Amazon S3 Objects** 
 
 - Objects (files) have a key  
 - The key is the full path: `s3://my-bucket/my_file.txt`  
 - The key is composed of prefix + object name  
-- There's no concept of directories within buckets, although the UI may trick you into thinking otherwise  
+- There is no concept of directories within buckets, although the UI may trick you into thinking otherwise  
 - Just keys with very long names that contain slashes  
 - Max object size is 5 TB. If you need more, you must use multipart upload
 
@@ -33,8 +33,8 @@
 
 **Amazon S3 Object Access** 
 
-- An IAM principal can access an S3 object if the user IAM permissions allow it OR the resource policy allows it, and there is no explicit deny.  
-- Encryption: encrypt objects in Amazon S3 using an encryption key 
+- An IAM principal can access an S3 object if the IAM permissions allow it or the resource policy allows it, and there is no explicit deny.  
+- Encryption: encrypt objects in Amazon S3 using an encryption key  
 
 **S3 Bucket Policies**
 
@@ -43,11 +43,11 @@
   - Effect: allow/deny  
   - Actions: set of APIs to allow or deny  
   - Principal: the account or user to apply the policy to  
-- Use S3 bucket policies to:  
-- Grant public access to the bucket  
-- Force objects to be encrypted at upload  
-- Bucket settings for block public access. These settings were created to prevent company data leaks  
-- Grant access to another account (cross account)
+- Use S3 bucket policies to:
+- Grant public access to the bucket
+- Force objects to be encrypted at upload
+- Block public access. These settings were created to prevent company data leaks.
+- Grant access to another account (cross-account)
 
 **S3 Bucket Policies**
 
@@ -57,7 +57,7 @@
 
 - S3 can host static websites and make them accessible on the internet  
 - The website URL will depend on the Region  
-- If you get 403, make sure the bucket allows public read
+- If you get a 403 error, make sure the bucket allows public read.
 
 **Amazon S3 Versioning**
 

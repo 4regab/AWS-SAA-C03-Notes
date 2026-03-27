@@ -1,22 +1,22 @@
 # Day 14 \- March 21
 
-## Cloudfront
+## CloudFront
 - Content delivery network (CDN) service
-- improves read performance by caching content at edge locations around the world
-- improves user experience
-- hundreds of points of presence (edge locations caches) around the world
-- ddos protection (because worldwide)integration with shield, AWS Web application firewall 
-## cloudfront origins 
-- s3 bucket
- - for distributing files and chaching them at the edge locations
- - for uploading files to S3 through cloudfront
- - secured using origin access control (OAC)
-- vpc origin
-  - for applications hosted in VPC private subnets
-  - private application load balancer/network load balancer/ec2 instance
-- Custom Origin (http)
-    - s3 website (must first enable the bucket as a static s3 website)
-    - any public http backend you want (example:Public ALB)
-## Cloudfront vs s3 cross region replication
-- cloudfront: global edge network, files are cached for A TTL, great for static content that must be available everywhere
-- s3 cross region replication: must be setup for each region you want, files are updated in near realtime, read only, great for dynamic conteent that needs to be available at low latency in few regions
+- Improves read performance by caching content at edge locations around the world
+- Improves user experience
+- Hundreds of points of presence (edge location caches) around the world
+- DDoS protection, plus integration with Shield and AWS Web Application Firewall
+## CloudFront Origins
+- S3 bucket
+ - For distributing files and caching them at edge locations
+ - For uploading files to S3 through CloudFront
+ - Secured using Origin Access Control (OAC)
+- VPC origin
+  - For applications hosted in VPC private subnets
+  - Private Application Load Balancer, Network Load Balancer, or EC2 instance
+- Custom origin (HTTP)
+    - S3 website (must first enable the bucket as a static S3 website)
+    - Any public HTTP backend you want (for example, a public ALB)
+## CloudFront vs. S3 Cross-Region Replication
+- CloudFront: global edge network, files are cached for a TTL, great for static content that must be available everywhere
+- S3 Cross-Region Replication: must be set up for each Region you want, files are updated in near real time, read-only, great for dynamic content that needs to be available at low latency in a few Regions

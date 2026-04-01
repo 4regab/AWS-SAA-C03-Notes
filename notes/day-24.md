@@ -18,3 +18,5 @@
 ## Amazon Athena - federated query
 - allows you to rrun sql queries across data stored in relation non relational object custom data sources (aws or on premises)
 - use data source connecters that run on aws lambda function to run queries (e.g. cloudwatch logs, dynamodb,rds)
+## Amazon EMR (Elastic MapReduce) 
+- is a managed cloud big data platform that simplifies running large-scale distributed data processing, analytics, and machine learning jobs using open-source frameworks like Apache Spark, Hive, and Hadoop on AWS.

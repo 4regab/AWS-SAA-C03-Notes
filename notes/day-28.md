@@ -251,7 +251,7 @@
 
 ## Direct Connect Gateway
 - if you want to setup a direct connect to one or more vpc in many different regions (same account), you must use a Direct Connect Gateway
-
+- corporate data center 
 ## Direct Connect - Connection Types
 - Dedicated Connections: 1Gbps, 10Gbps and 100 Gbps capacity
   - physical ethernet port dedicaed to a customer
@@ -411,3 +411,348 @@
 - traffic filtering: allow, drop, alert for the traffic that matches rule
 - active flow inspection to protect against network threats with intrusion prevention capabilities (like gateway load balancer, but all managed by AWS)
 - send logs of rule matches to AMazon S3, cloudwatch logs, and kinesis data firehose
+
+## Disaster Recovery Overview
+- Any event that has a negative impact on a company's business continuity or finances is a disaster
+- Disaster recovery (DR) is about preparing for and recovering from disaster
+- What kind of disaster recovery?
+  - on-premises => on-premises: traditional DR, and very expensive
+  - on-premises => aws cloud: hybrid recovery
+  - aws cloud region A => aws cloud region B
+- Need to define two terms:
+  - RPO: Recovery Point Objective
+  - RTO: Recovery Time Objective
+
+## Disaster Recovery Strategies
+- Backup and Restore (High RPO)
+- Pilot Light  
+- Warm Standby
+- Hot Site / Multi Site Approach
+
+## Backup and Restore (High RPO)
+- very high RPO
+- RTO: hours to days to recover
+- backups stored on S3, S3 IA, S3 Glacier + RDS snapshots, EBS snapshots, etc...
+- restore the data to a new instance
+
+## Pilot Light
+- very low RPO
+- a small version of the app is always running
+- use for the critical core (pilot light)
+- very similar to backup and restore
+- faster than backup and restore as critical systems are already up
+
+## Warm Standby
+- full system is up and running but at minimum size
+- upon disaster, we can scale to production load
+
+## Multi Site / Hot Site Approach
+- very low RTO
+- very expensive
+- full production scale running AWS and on-premises
+
+## All AWS Multi-Region
+- very low RTO
+- very expensive
+- full production scale running in AWS and across multiple regions
+- good for critical applications
+
+## Disaster Recovery Tips
+- Backup
+  - EBS Snapshots, RDS automated backups / snapshots, etc...
+  - Regular pushes to S3, S3 IA, S3 Glacier, etc...
+  - Database snapshots stored in S3
+  - Lifecycle policy
+  - Cross Region Replication
+- High Availability
+  - Use route53 to migrate DNS over from region to region
+  - RDS Multi-AZ, ElastiCache Multi-AZ, EFS, S3
+  - Site to Site VPN as a recovery from Direct Connect
+- Replication
+  - RDS Replication (cross region), AWS Aurora + Global Databases
+  - Database replication from on-premises to RDS
+  - Storage Gateway
+- Automation
+  - CloudFormation / Terraform replication of infrastructure
+  - Recover / Reboot EC2 instances via SSM Automation Documents
+  - AWS Lambda functions for customized automations
+  - Step Functions to orchestrate recovery workflows
+- Chaos
+  - Netflix has a "simian-army" randomly terminating EC2
+
+## AWS RTO and RPO Summary
+- Backup and Restore: high RPO
+- Pilot Light: lowest RTO, highest RPO
+- Warm Standby: lowest RPO
+- Multi Site / Hot Site: very low RTO and RPO 
+
+## AWS Elastic Disaster Recovery (DRS)
+- used to be named "CloudEndure Disaster Recovery"
+- Quickly and easily recover your physical, virtual and cloud based servers into AW
+S
+- Continuous block level replication for your servers
+- Example: protect your most critical databases (SQL, Oracle, MySQL, etc...)
+- Continuous block level replication for your servers
+
+## DMS - Database Migration Service
+- Quickly and securely migrate databases to AWS, resilient, self healing
+- The source database remains available during the migration
+- Supports:
+  - Homogeneous migrations: ex Oracle to Oracle
+  - Heterogeneous migrations: ex Microsoft SQL Server to Aurora
+- Continuous Data Replication using CDC
+- You must create an EC2 instance to perform the replication tasks
+
+## DMS Sources and  targets
+- Sources:
+  - On-Premise and EC2 instances (Oracle, MS SQL Server, MySQL, MariaDB, PostgreSQL, MongoDB, SAP, DB2)
+  - Azure: Azure SQL Database
+  - Amazon RDS (all including Aurora) & Aurora Serverless
+  - Amazon S3
+- Targets:
+  - On-Premise and EC2 instances (Oracle, MS SQL Server, MySQL, MariaDB, PostgreSQL, SAP)
+  - Amazon RDS, Amazon Redshift, Amazon DynamoDB, Amazon S3, DocumentDB, Amazon OpenSearch Service, Kinesis Data Streams, Apache Kafka
+  - ElasticSearch Service
+
+## AWS Schema Conversion Tool (SCT)
+- Convert your Database's Schema from one engine to another
+- Example OLTP: (SQL Server or Oracle) to MySQL, PostgreSQL, Aurora
+- Example OLAP: (Teradata or Oracle) to Amazon Redshift
+- You do not need to use SCT if you are migrating the same type of technologies
+  - Example: On-Premise PostgreSQL => RDS PostgreSQL
+  - The DB engine is still PostgreSQL (RDS is the platform)
+
+## DMS - Multi-AZ Deployments
+- when multi-AZ enabled, DMS provisions and maintains a synchronously stand replica in a different AZ
+- Advantages:
+  - provides data redundanc
+  - eliminates I/O freezes
+  - minimizes latency spikes
+
+## RDS & Aurora MySQL Migrations
+- RDS MySQL to Aurora MySQL
+  - Option 1: DB snapshots from RDS MySQL restored as MySQL aurora DB
+  - Option 2: Create an Aurora Read Replica your RDS mysql and when the replication is lag 0, promote it as its own DB cluster (can take time and cost $)
+- External MySQL to Aurora MySQL
+  - Option 1: 
+    - Use Percona XtraBackup to create a file backup in amazon s3
+    - create an aurora MySQl DB from amazon s3
+  - Option 2L
+    - create an aurora MySQL DB
+    - use mysqldump utility to migrate data MySQL into aurora (slow than s3 method)
+- Use DMS if both databases are up and runnin
+
+## RDS & Aurora PostgreSQL migrations
+- RDS postgreSQL to aurora postgresql
+  - option 1: DB snapshots from RDS postgresql restored as PostgreSQL aurora DB
+  - option 2: create an aurora read replica of your RDS postgresql and when the replication lag is 0, promote it as its own DB cluster (can take time and cost $)
+- External PostgreSQL to Aurora PostgreSQL
+  - create a backup and put it in Amazon S3
+  - Import it using the aws_s3 aurora extension
+- use dms if both databases are up and running
+
+## On-Premise strategy with AWS
+- Ability to download Amazon linux 2 ami as VM .iso format
+  - VMWare, KVM, VirtualBox (Oracle VM), Microsoft Hyper-V
+- VM import / export
+  - migrate existing applications into EC2
+  - create a DR repository strategy for your on-premise VMs
+  - can export back the VMs from EC2 to on-premise
+- AWS application discovery service
+  - Gather information about your on-premise servers to plan a migration
+  - Server utilization and dependency mappings
+  - Track with AWS migration hub
+- AWS database migration service (DMS)
+  - replicate on-premise => AWS, AWS => AWS, AWS => on-premise
+  - Works with various database technologies (Oracle, MySQL, DynamoD, etc...)
+- AWS server migration service (SMS)
+  - Incremental replication of on-premise live servers to AWS
+
+## AWS Backup
+- fully managed service 
+- centrally manage and automate backups across AWS services
+- no need to create custom scripts and manual processes
+- Supported Services:
+  - Amazon EC2/EBS
+  - Amazon S3
+  - Amazon RDS (all engines)
+  - Amazon DynamoDB
+  - Amazon EFS
+  - Amazon FSx (Lustre & Windows File Server)
+  - AWS Storage Gateway (Volume Gateway)
+- Support cross-region and cross-account backups
+- On-demand and scheduled backups
+- Tag-based backup policies
+- You create backup policies known as Backup Plans
+  - Backup frequency (every 12 hours, daily, weekly, monthly, cron expression)
+  - Backup window
+  - Transition to cold storage (infrequent access)
+  - Retention period (always, days, weeks, months, years, custom)
+
+## AWS Backup Vault Lock
+- enforce a work (write once read many) state for all the backups that you store in you AWS backup vault
+- Additional layer of defense to protect your backup against:
+  - inadvertent or malicious delete operations
+  - updates that shorten or alter retention periods
+- Even root user cannot delete backups when enabled
+
+## AWS Application Discovery Service
+- Plan migration projects by gathering information about on premises data centers
+- Server utilization and dependency mapping are important for migrations
+- Agentless Discovery (AWS Agentless Discovery Connector)
+  - VM inventory, configuration, and performance history such as CPU, memory, and disk usage
+- Agent-based Discovery (AWS Application Discovery Agent)
+  - System configuration, system performance, running processes, and details of the network connections between systems
+- Resulting data can be viewed within AWS Migration Hub
+
+## AWS Application migration Service (MGN)
+- The "AWS evolution" of cloudendure migration, replacing aws server migration server sms
+- Lift-and-shift (rehost) solution which simplify migrating applications to AWS
+- Convert your physical, virtual, and cloud-based servers to run natively on AWS
+- Minimal downtime, reduced costs
+
+## Transferring large amount of data into AWS
+- Example: transfer 200tb of data in the cloud. We have 100mbps internet connection
+- Over the internet / Site-to-Site VPN: 
+  - Immediate to setup
+  - will take 200(TB) * 1000(GB) * 8(Gb) / 100(Mbps) = 16,000,000s (185 days)
+- Over direct connect 1gbps: 
+  - Long for the one time setup (over a month)
+  - will take 200(TB) * 1000(GB) * 8(Gb) / 1000(Mbps) = 1,600,000s (18.5 days)
+- Over Snowball:
+  - Takes about 1 week for the end to end transfer
+  - can be combined with DMS
+- For on-going replication/transfers: site-to-site vpn or DX with DMS or Datasyn
+
+## VMware cloud on AWS
+- Some customers use VMware cloud to manage their on-premises data center
+- They want to extend the data center capacity to AWS, but keep using the VMware cloud software
+- VMware Cloud On AWS
+- Use cases:
+  - migrate your VMware vSphere based workloads to AWS
+  - Run your production workloads across VMware vSphere based private, public and hybrid cloud environments
+  - have a disaster recovery strategy
+
+## fan out pattern: deliver to multi sqs
+- Process a message from SNS and send the message to multiple SQS queues, one per "subscriber"
+- Fully decoupled, no data loss
+- SQS allows for: data persistence, delayed processing and retries of work
+- Ability to add more SQS subscribers over time
+- Make sure your SQS queue access policy allows for SNS to write
+
+## S3 event notifications
+- S3:objectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
+- Object name filtering possible (*.jpg)
+- Use case: generate thumbnails of images uploaded to S3
+- Can create as many "S3 events" as desired
+- S3 event notifications typically deliver events in seconds but can sometimes take a minute or longer
+
+## S3 event notifications with amazon event bridge
+- Advanced filtering options with JSON rules (metadata, object size, name...)
+- Multiple destinations - ex step functions, Kinesis streams
+- EventBridge capabilities - archive, replay events, rely on advanced filtering
+
+## Caching Strategies
+- DB cache
+- Cache at the application level
+- CDN caching
+- it's all about choosing where do we want to cache content
+- how do we want to cache content,
+- how long do we want to cache content,
+- and then, are we okay with some latency,
+- and which content actually do we want to be cached?
+
+## Blocking IP Address
+- NACLs can be used to block specific IP addresses at the subnet level
+- AWS WAF can be used to block IPs at the ALB level
+- ALB, cloudfront & WAF
+
+## High Performance Computing (HPC)
+- The cloud is the perfect place to perform HPC
+- You can create a very high number of resources in no time
+- You can speed up time to results by adding more resources
+- You can pay only for the systems you've actually used
+- Perform genomics, computational chesmitry, financial risk modeling, weather prediction, machine learning, deep learning, autonomous driving
+
+## Data Management & Transfer
+- AWS direct connect
+  - move gb/s of data to the cloud over a private secure network
+- Snowball and Snowmobile
+  - move pb of data to the cloud
+- AWS Datasync
+  - move large amount of data between onpremise and s3, efs, fsx for windows
+
+## Compute and networking
+- EC2 instances:
+  - CPU optimized, gpu optimized
+  - spot instances / spot fleets for cost saving + auto scaling
+- EC2 Placement groups: cluster for good network performance
+- EC2 enhaced networking (SR-IOV)
+  - higher bandwidth, higher pps (packet per second), lower latency
+  - Option 1: elastic network adapter (ENA) up to 100Gbps
+  - Option 2: intel 82599 VF up to 10Gbps - LEGACY
+- Elastic Fabric Adapter (EFA)
+  - improved ENA for HPC, only works for linux
+  - great for inter-node communications, tightly coupled workloads
+  - leverages message passing interface (MPI) standard
+  - bypasses the underlying linux OS to provide low-latency, reliable transport
+
+## Storage
+- Instance attached storage:
+  - EBS: scale up to 256000 IOPS with io1/io2
+  - Instance store: scale to millions of IOPS, linked to ec2 instance, low latency
+- network storage:
+  - S3: large blog not a file system
+  - EFS: scale IOPS based on total size or use provisioned IOP
+  - FSx for Lustre: HPC optimized distributed file system, millions of IOPS
+
+## Automation and orchestration
+- AWS Batch
+  - AWS batch supports multi-node parallel jobs, which enables you to run single jobs that span multiple EC2 instances
+  - easily schedule jobs and start ec2 instances accordingly
+- AWS ParallelCluster
+  - open source cluster management tool to deploy HPC on aws
+  - configure with text files
+  - automate creation of vpc, subnet, cluster type and instance type
+  - ability to enable EFA on the cluster (improves network performanc
+  
+## Creating a highly available EC2 Instance
+- Auto scaling group
+- Multi AZ deployment
+- Elastic load balancer
+- ASG + EBS
+
+## Cloudformation
+- Is a declarative way of outlining your AWS infrastructure, for any resources (most of them are supported)
+- Cloudformation is free, but you pay for the resources it creates
+- for example: within a cloudformation template you say:
+  - I want a security group
+  - I want two EC2 instances using this security group
+  - I want two elastic IPs for these EC2 instances
+  - I want an S3 bucket
+  - I want a load balancer (ELB) in front of these EC2 instances
+- Cloudformation creates those for you, in the right order, with the exact configuration that you specify
+
+## benefits of AWS cloudformation
+- Infrastracture as a code
+  - no resources are manually created which is excellent for control
+  - changes to the infrastructure are reviewed through code
+- Cost
+  - each resources within the stack is tagged with an identifier so you can easily see how much a stack costs you
+  - you can estimate the costs of your resources using the cloudformation template
+  - savings strategy: in dev, you could automate deletion of templates at 5 PM and recreated at 8 AM, safely
+- Productivity
+  - Ability to destroy and re-create an infrastructure on the cloud on the fly
+  - Automated generation of Diagram for your templates!
+  - Declarative programming (no need to figure out ordering and orchestration)
+- Don't re-invent the wheel
+  - leverage existing templates on the web!
+  - leverage the documentation
+- Supports (almost) all AWS resources:
+  - evertythin we'll see in this course is supported
+  - you can use "custom resources" for resources that are not supported
+
+## Cloudformation + Infrastracture Composer
+- Example: wordpress cloudformation stack
+- we can see all the resources
+- we can see all the relationships between the components

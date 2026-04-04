@@ -756,3 +756,156 @@ S
 - Example: wordpress cloudformation stack
 - we can see all the resources
 - we can see all the relationships between the components
+
+## Cloudformation - service role
+- IAM role that allows cloudformation to create, update, delete,  stack resources on your behalf
+- Give ability to users to create/update/delete the stack resources even if they dont have permissions to work with the resources in the stack
+- Use Cases:
+  - you want to achieve the least privilege principle
+  - but you dont want to give the user all the required permissions to creat the stack resources
+- User Must have iam:PassRole permissions
+
+
+## Amazon simple email service (SES)
+- fully managed service to send emails securely and at scale
+- allows inbound/outbound emails
+- reputation dashboard, performance insights, anti spam feedback
+- Provide statistics such as email deliveries, bounces, feedback loop results, email open
+- SUpports domaikeys indentified mail (DKIM) and sender policy framework (spf)
+- Flexible IP deployment: shared, dedicated, and customer owned IPs
+- Send emails using your applicatiom using AWS console, APIS, or STMP
+- Use cases: transactional, marketing, notification email
+
+## Amazon Pinpoint
+- Scalable 2 way (outbound/inbound) marketing communications service
+- Supports email, SMS, push, voice, and in-app messaging
+- Ability to segment and personalize messages with the right content to customers
+- Possibility to receive replies
+- Scales to billions of messages per day
+- Use case: run campaigns by sending marketing, bulk, transactional SMS messages
+- Versus AWS SNS or AWS SES
+  - In SNS & SES, you manage each message's audience, content, and delivery schedule
+  - In Pinpoint, you create message templates, delivery schedules, highly targeted segments, and full campaigns
+
+## Systems Manager - SSM Session manager 
+- Allows you to start a secure shell on your ec2 and onpremises servers
+- no ssh access, bastion hosts, or ssh keeys needed
+- no port 22 needed (better security)
+- support linux, macos and windows
+- send session log data to s3 or cloudwatch logs
+
+## Systems manager - run command
+- Execute a document (= script) or just run a command
+- run command accross multiple instances (using resource groups)
+- no need for SSH
+- command output can be shown in the console, sent to s3 bucket or cloudwatch logs
+- send notifications to sNS about command status (in progress, success, failure)
+- integrated with IAM & cloudtrail
+- can be invoked using eventbridge
+
+## Systems manager - patch manager
+- automate the process of patching your managed instances
+- OS updates, application updates, security updates
+- supports EC2 instances and on-premises servers
+- supports linux, macos, and windows
+- patch on-demand or on a schedule using maintenance windows
+- scan instances and generate patch compliance reports (missing patches)
+
+## Systems manager - maintenance windows
+- defines a schedule for when to perform actions on your instances
+- examples: patching an instance, install software, or configuration changes
+- maintenance window contains
+  - schedule
+  - duration
+  - set of registered instances
+  - set of registered tasks
+
+
+## Systems manager - automation
+- simplify common maintenance and deployment tasks of EC2 instances and other AWS resources
+- example: restart instances, create an ami, ebs snapshot
+- automation runbook = SSM documents to define actions performed on your EC2 instances or AWS resources
+- can be triggered using:
+  - manually using AWS console, CLI or SDK
+  - eventbridge
+  - when a state change in EC2 instance occurs
+  - on a schedule using maintenance windows
+  - by aws config for rules remediations
+
+## Cost Explorer
+- Visualize, understand, and manage your AWS costs and usage over time
+- create custom reports that analyze cost and usage data
+- analyze your data at a high level: total costs and usage accross all accounts
+- or monthly, hourly, resource level granularity
+- choose an optimal savings plan (to lower prices on your bill)
+- forecast usage up to 18 months based on previous usage
+
+## AWS Cost Anomaly Detection
+- Continously monitor your cost and usage using ML to detect unusual spends
+- it learns your unique, historic spend patterns to detect one time cost spike and/or continuous cost increases (you don't need to define thresholds)
+- Monitor AWS services, member account, cost allocation tags, or cost categories
+- Sends you the anomaly detection report with root cause analysis
+- get notified with individual alerts, or daily/weekly summary using SN
+
+## AWS Outposts
+- Hybrid Cloud: businesses that keep on-premises infrastructure alongside cloud infrastructure
+- therefore, two ways of dealing IT systems:
+  - one for the AWS cloud (using the AWS Console, CLI, and AWS APIs)
+  - one for their on-premises infrastracture
+- AWS outposts are "server racks" that offers the same AWS infrastructure, APIs, and tools to build your own applications on premises just as in the cloud
+- AWS will setup and manage "Outposts Racks" within your on-premises infrastructure and you can start leveraging AWS services on premises
+- You are responsible for the Outposts Rack physical security
+- Benefits:
+  - low-latency access to on-premises systems
+  - local data processing
+  - data residency
+  - Easier migration from on-premises to the cloud
+  - Fully managed service
+- Some services that works on outposts:
+  - ec2, EBS, S3, EKS, ECS, RDS, EMR
+
+## AWS Batch
+- Fully managed batch processing at any scale
+- efficiently run 100,000s of computing batch jobs on AWS
+- a "batch job" is a job with a start and an end (opposed to continuous)
+- Batch will dynamically launch EC2 instances or Spot Instances
+- AWS Batch provisions the right amount of compute / memory
+- You submit or schedule batch jobs and AWS Batch does the rest
+- Batch jobs are defined as Docker images and run on ECS
+- Helpful for cost optimizations and focusing less on the infrastructure
+
+## Batch vs Lambda
+- Lambda:
+  - time limit
+  - limited runtimes
+  - limited temp disk space
+  - serverless
+- Batch
+  - no time limit
+  - any runtime as long as it's packaged as a Docker image
+  - relies on EBS/instance store for disk space
+  - runs on EC2 (can be managed by AWS)
+  - not serverless
+
+## AWS App Flow
+- Fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications and AWS
+- Sources: salesforce, sap, zendesk, slack, servicenow
+- Destinations: Amazon S3, Redshift or non AWS such as snowflake and salesforce
+- Frequency: on a schedule, in response to events, or on demand
+- Data Transformatiion capabilities like filtering and validation
+- Encrypted over the public internet or privately over AWS privatelink
+- Dont spend time writing the integrations and leverage APis immediately
+
+## AWS Amplify - web and mobile applications
+- A set of tools and services that helps you develop and deploy scalable full stack web and mobile applications
+- Authentication, Storage, API (REST, GraphQL), CI/CD, PubSub, Analytics, AI/ML Predictions, Monitoring
+- Connect your source code from github, AWS CodeCommit, Bitbucket, or upload directly
+
+## Instance Scheduler on AWS
+- AWS solution deployed via CloudFormation (not a service)
+- Automatically start, stop or your AWS services to reduce costs (up to 70%)
+- Example: stop company's EC2 instances during non-working hours
+- Supports EC2 Instances, EC2 scaling groups, and RDS instance
+- Schedules are managed in a dynamoDB table
+- Uses resources' tags and lambda to stop/start instances
+- Supports cross account and cross region resources
